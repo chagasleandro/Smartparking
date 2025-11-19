@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: smartparking
+      POSTGRES_USER: sp_user
+      POSTGRES_PASSWORD: sp_pass
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  mqtt:
+    image: eclipse-mosquitto
+    ports: ["1883:1883"]
+
+  app:
+    build: .
+    ports: ["8080:8080" ]
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/smartparking
+      SPRING_DATASOURCE_USERNAME: sp_user
+      SPRING_DATASOURCE_PASSWORD: sp_pass
+    depends_on: ["db","mqtt"]
+
+volumes:
+  db_data:
